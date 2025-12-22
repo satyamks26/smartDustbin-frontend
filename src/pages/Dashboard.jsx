@@ -4,7 +4,8 @@ import { visitBin, openBin, closeBin } from "../services/binApi";
 import "./Dashboard.css";
 
 function Dashboard() {
-    const { binId } = useParams();
+    const params = useParams();
+    const binId = params.binId || "1";
 
     const [user, setUser] = useState(null);
     const [bin, setBin] = useState(null);

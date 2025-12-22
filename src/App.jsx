@@ -5,6 +5,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Dashboard />} />
         <Route path="/bin/:binId" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
