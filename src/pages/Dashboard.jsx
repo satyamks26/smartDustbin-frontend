@@ -18,16 +18,14 @@ function Dashboard() {
             try {
                 let storedUserId = localStorage.getItem("userId");
 
-                // Sanitize: localStorage can return "null" or "undefined" as strings sometimes 
-                // or they might have been saved as such incorrectly.
                 if (storedUserId === "null" || storedUserId === "undefined") {
                     storedUserId = null;
                 }
 
                 const data = await visitBin(binId, storedUserId);
 
-                if (!storedUserId || !data.user.id) {
-                    localStorage.setItem("userId", data.user._id || data.user.id);
+                if (!storedUserId && data.user?.id) {
+                    localStorage.setItem("userId", data.user.id);
                 }
 
                 setUser(data.user);
@@ -86,43 +84,47 @@ function Dashboard() {
                 <div className="grid">
                     <div className="card">
                         <div className="label">User</div>
-                        <div className="value">{user.displayName}</div>
+                        <div className="value">
+                            {user?.displayName || "Guest"}
+                        </div>
 
                         <div className="label mt">Points Earned</div>
-                        <div className="value">{user.points}</div>
+                        <div className="value">
+                            {user?.points ?? 0}
+                        </div>
                     </div>
 
                     <div className="card">
                         <div className="label">Bin Status</div>
-                        <div className={`status ${bin.status}`}>
-                            {bin.status}
+                        <div className={`status ${bin?.status || ""}`}>
+                            {bin?.status || "loading..."}
                         </div>
 
                         <div className="label mt">Fill Level</div>
-                        <div className="value">{bin.level}%</div>
+                        <div className="value">{bin?.level ?? 0}%</div>
                     </div>
-                </div>
 
-                <div className="buttons">
-                    <button
-                        className="open"
-                        onClick={handleOpen}
-                        disabled={actionLoading}
-                    >
-                        Open Bin
-                    </button>
+                    <div className="buttons">
+                        <button
+                            className="open"
+                            onClick={handleOpen}
+                            disabled={actionLoading}
+                        >
+                            Open Bin
+                        </button>
 
-                    <button
-                        className="close"
-                        onClick={handleClose}
-                        disabled={actionLoading}
-                    >
-                        Close Bin
-                    </button>
-                </div>
+                        <button
+                            className="close"
+                            onClick={handleClose}
+                            disabled={actionLoading}
+                        >
+                            Close Bin
+                        </button>
+                    </div>
 
-                <div className="footer-note">
-                    Scan the QR on the dustbin to earn points and keep the environment clean ♻️
+                    <div className="footer-note">
+                        Scan the QR on the dustbin to earn points and keep the environment clean ♻️
+                    </div>
                 </div>
             </div>
         </div>
