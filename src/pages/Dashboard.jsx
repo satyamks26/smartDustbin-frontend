@@ -16,11 +16,18 @@ function Dashboard() {
     useEffect(() => {
         async function loadDashboard() {
             try {
-                const storedUserId = localStorage.getItem("userId");
+                let storedUserId = localStorage.getItem("userId");
+
+                // Sanitize: localStorage can return "null" or "undefined" as strings sometimes 
+                // or they might have been saved as such incorrectly.
+                if (storedUserId === "null" || storedUserId === "undefined") {
+                    storedUserId = null;
+                }
+
                 const data = await visitBin(binId, storedUserId);
 
-                if (!storedUserId) {
-                    localStorage.setItem("userId", data.user.id);
+                if (!storedUserId || !data.user.id) {
+                    localStorage.setItem("userId", data.user._id || data.user.id);
                 }
 
                 setUser(data.user);
@@ -79,7 +86,7 @@ function Dashboard() {
                 <div className="grid">
                     <div className="card">
                         <div className="label">User</div>
-                        <div className="value">{user.name}</div>
+                        <div className="value">{user.displayName}</div>
 
                         <div className="label mt">Points Earned</div>
                         <div className="value">{user.points}</div>

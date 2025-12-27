@@ -1,4 +1,4 @@
-const BASE_URL = "https://smartdustbin.onrender.com";
+const BASE_URL = "http://localhost:5000";
 
 export async function visitBin(binId, userId) {
     const url = userId
