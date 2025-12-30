@@ -5,13 +5,29 @@ import "./Dashboard.css";
 
 function Dashboard() {
     const params = useParams();
-    const binId = params.binId || "1";
+    const binId = params.binId || "BIN_01";
 
     const [user, setUser] = useState(null);
     const [bin, setBin] = useState(null);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState("");
+
+    // -------- helper: normalize backend response --------
+    function normalizeResponse(data) {
+        const resolvedUser =
+            data.user ||
+            data?.data?.user ||
+            (data.displayName ? data : null);
+
+        const resolvedBin =
+            data.bin ||
+            data?.data?.bin ||
+            (data.status ? data : null);
+
+        return { resolvedUser, resolvedBin };
+    }
+    // ---------------------------------------------------
 
     useEffect(() => {
         async function loadDashboard() {
@@ -23,13 +39,14 @@ function Dashboard() {
                 }
 
                 const data = await visitBin(binId, storedUserId);
+                const { resolvedUser, resolvedBin } = normalizeResponse(data);
 
-                if (!storedUserId && data.user?.id) {
-                    localStorage.setItem("userId", data.user.id);
+                if (resolvedUser?._id) {
+                    localStorage.setItem("userId", resolvedUser._id);
                 }
 
-                setUser(data.user);
-                setBin(data.bin);
+                setUser(resolvedUser);
+                setBin(resolvedBin);
                 setLoading(false);
             } catch (err) {
                 setError("Failed to load dashboard");
@@ -43,11 +60,19 @@ function Dashboard() {
     async function handleOpen() {
         try {
             setActionLoading(true);
-            await openBin(binId);
 
-            const storedUserId = localStorage.getItem("userId");
-            const data = await visitBin(binId, storedUserId);
-            setBin(data.bin);
+            const userId = localStorage.getItem("userId");
+            await openBin(binId, userId);
+
+            const data = await visitBin(binId, userId);
+            const { resolvedUser, resolvedBin } = normalizeResponse(data);
+
+            if (resolvedUser?._id) {
+                localStorage.setItem("userId", resolvedUser._id);
+            }
+
+            setUser(resolvedUser);
+            setBin(resolvedBin);
         } catch {
             setError("Please wait before trying again");
         } finally {
@@ -55,14 +80,23 @@ function Dashboard() {
         }
     }
 
+
     async function handleClose() {
         try {
             setActionLoading(true);
-            await closeBin(binId);
 
-            const storedUserId = localStorage.getItem("userId");
-            const data = await visitBin(binId, storedUserId);
-            setBin(data.bin);
+            const userId = localStorage.getItem("userId");
+            await closeBin(binId, userId);
+
+            const data = await visitBin(binId, userId);
+            const { resolvedUser, resolvedBin } = normalizeResponse(data);
+
+            if (resolvedUser?._id) {
+                localStorage.setItem("userId", resolvedUser._id);
+            }
+
+            setUser(resolvedUser);
+            setBin(resolvedBin);
         } catch {
             setError("Please wait before trying again");
         } finally {

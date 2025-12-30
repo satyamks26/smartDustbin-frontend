@@ -1,4 +1,7 @@
-const BASE_URL = "http://10.253.222.113:5000";
+const BASE_URL = "https://smartdustbin.onrender.com";
+
+console.log("BIN API USING RENDER BACKEND");
+
 
 export async function visitBin(binId, userId) {
     const url = userId
@@ -9,16 +12,18 @@ export async function visitBin(binId, userId) {
     return res.json();
 }
 
-export async function openBin(binId) {
-    const res = await fetch(`${BASE_URL}/bin/${binId}/open`, {
-        method: "POST"
-    });
+export async function openBin(binId, userId) {
+    const res = await fetch(
+        `${BASE_URL}/bin/${binId}/open?userId=${userId}`,
+        { method: "POST" }
+    );
     return res.json();
 }
 
-export async function closeBin(binId) {
-    const res = await fetch(`${BASE_URL}/bin/${binId}/close`, {
-        method: "POST"
-    });
+export async function closeBin(binId, userId) {
+    const res = await fetch(
+        `${BASE_URL}/bin/${binId}/close?userId=${userId}`,
+        { method: "POST" }
+    );
     return res.json();
 }
